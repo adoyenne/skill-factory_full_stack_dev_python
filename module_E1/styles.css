@@ -1,0 +1,85 @@
+/* Общие стили */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background-color: #322;
+    color: #fff;
+    padding: 20px;
+}
+
+.inner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-container h1 {
+    margin: 0;
+}
+
+.navigation {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navigation li {
+    display: inline;
+    margin-left: 20px;
+}
+
+.nav-link {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: gray;
+    color: #333;
+}
+
+.content {
+    padding: 20px;
+}
+
+/* Специфичные стили для страницы "Главная" */
+.hobby-info {
+    display: flex;
+    align-items: flex-start;
+}
+
+.hobby-info img {
+    max-width: 800px;
+    border-radius: 10px;
+    margin-right: 20px;
+}
+
+.hobby-info .text {
+    flex: 1;
+}
+
+.caption {
+    font-style: italic;
+    margin-left: 10px; /* Чтобы было немного слева от фото */
+    margin-top: 5px; /* Чтобы было немного под фото */
+}
+
+/* Специфичные стили для страницы "Обо мне" */
+.about-content .about-info {
+    display: flex;
+    align-items: upper;
+}
+
+.about-content img {
+    max-width: 400px;
+    border-radius: 20px;
+    margin-right: 20px;
+}
+
+.about-content .text {
+    flex: 1;
+}
