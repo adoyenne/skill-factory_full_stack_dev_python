@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MMORPG Board{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            transition: background-color 1s;
+        }
+        .navbar {
+            background-color: #003366 !important; /* Темно-синий цвет для header */
+        }
+    </style>
+    <script>
+        function setBgColorBasedOnTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            let bgColor;
+
+            if (hours < 6) {
+                bgColor = '#001f3f'; // Очень темный синий
+            } else if (hours < 12) {
+                bgColor = '#0074D9'; // Насыщенный синий
+            } else if (hours < 18) {
+                bgColor = '#7FDBFF'; // Светло-голубой
+            } else {
+                bgColor = '#39CCCC'; // Средне-голубой
+            }
+
+            document.body.style.backgroundColor = bgColor;
+        }
+
+        document.addEventListener("DOMContentLoaded", setBgColorBasedOnTime);
+    </script>
+    {% load static %}
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark"> <!-- Изменен на navbar-dark для контраста -->
+        <a class="navbar-brand" href="{% url 'post_list' %}">MMORPG Board</a>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'post_list' %}">Posts</a>
+                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">My Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'post_new' %}">New Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_signup' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

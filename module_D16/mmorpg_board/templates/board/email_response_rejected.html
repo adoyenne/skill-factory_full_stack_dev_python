@@ -1,0 +1,15 @@
+<!-- templates/email_response_rejected.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Response Rejected</title>
+</head>
+<body>
+    <h2>Уведомление: Ваш отклик был отклонен</h2>
+    <p>Здравствуйте, {{ response.author.username }}!</p>
+    <p>Мы сожалеем сообщить вам, что ваш отклик на объявление "{{ response.post.title }}" был отклонен автором поста.</p>
+    <p>С уважением,<br>Ваша команда сайта</p>
+</body>
+</html>

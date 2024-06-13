@@ -1,0 +1,11 @@
+<!-- templates/board/post_delete_confirm.html -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Are you sure you want to delete "{{ post.title }}"?</h2>
+    <form action="{% url 'post_delete' pk=post.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes</button>
+        <a href="{% url 'post_detail' pk=post.pk %}" class="btn btn-secondary">No</a>
+    </form>
+{% endblock %}

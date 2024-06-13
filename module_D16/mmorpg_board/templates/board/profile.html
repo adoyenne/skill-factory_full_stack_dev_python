@@ -1,0 +1,38 @@
+<!-- templates/board/profile.html -->
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>My Posts</h2>
+<ul>
+    {% for post in posts %}
+        <li>
+            <a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a> - {{ post.category.name }}
+            <a href="{% url 'post_edit' pk=post.pk %}">Edit</a>
+            <a href="{% url 'post_delete_confirm' pk=post.pk %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<h2>Responses to My Posts</h2>
+<ul>
+    {% for response in responses %}
+        <li>
+            <strong>{{ response.post.title }}:</strong> {{ response.content }} by {{ response.author.username }}
+            {% if not response.accepted %}
+                <a href="{% url 'accept_response' pk=response.pk %}">Accept</a>
+            {% endif %}
+            <a href="{% url 'delete_comment_confirm' pk=response.pk %}">Reject</a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

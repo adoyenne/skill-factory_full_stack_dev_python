@@ -1,0 +1,55 @@
+<!-- templates/board/post_list.html -->
+{% extends "base.html" %}
+
+{% block title %}Posts{% endblock %}
+
+{% block content %}
+<h2>Posts</h2>
+<ul>
+    {% for post in posts %}
+        <li class="post-item">
+            <strong>{{ post.title }}</strong> - {{ post.category.name }}
+            <div class="post-content">{{ post.content|safe }}</div>
+
+            {% if post.image %}
+                <div class="post-image">
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid">
+                </div>
+            {% endif %}
+
+            {% if post.video %}
+                <div class="post-video">
+                    <video controls>
+                        <source src="{{ post.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            {% endif %}
+
+            <h5 class="comment-heading"><em>Responses</em></h5>
+            <ul>
+                {% for response in post.responses.all %}
+                    <li class="comment-item">
+                        {{ response.content }} - <strong>{{ response.author.username }}</strong>
+                        {% if response.author == user %}
+                            <a href="{% url 'edit_comment' pk=response.pk %}">Edit</a>
+                            <a href="{% url 'delete_comment' pk=response.pk %}">Delete</a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'post_list' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="hidden" name="post_pk" value="{{ post.pk }}">
+                    <button type="submit">Add Response</button>
+                </form>
+            {% else %}
+                <p><a href="{% url 'account_login' %}">Log in</a> to respond to the post.</p>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
