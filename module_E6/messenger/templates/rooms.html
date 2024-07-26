@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Chat Rooms{% endblock %}
+
+{% block content %}
+<h1>Chat Rooms</h1>
+<input type="text" id="room-name-input" placeholder="Enter room name">
+<button id="create-room-button">Create Room</button>
+<ul id="room-list"></ul>
+
+{% load static %}
+<script src="{% static 'rooms.js' %}"></script>
+
+{% endblock %}

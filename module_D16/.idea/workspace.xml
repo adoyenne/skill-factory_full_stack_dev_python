@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cbdf337a-5f3d-48c2-936a-355d51708c35" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/mmorpg_board/templates/board/delete_comment_confirm.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../module_E1/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/../module_E1/about.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../module_E1/contacts.html" beforeDir="false" afterPath="$PROJECT_DIR$/../module_E1/contacts.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../module_E1/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../module_E1/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../module_E1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../module_E1/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,23 +23,23 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="2hk9bXDQnXje7ZjHUdh3q0Mxpuq" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
     <option name="showScratchesAndConsoles" value="false" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/mmorpg_board" />

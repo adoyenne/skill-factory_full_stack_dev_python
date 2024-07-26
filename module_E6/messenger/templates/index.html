@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Messenger{% endblock %}
+
+{% block content %}
+    <div id="app">
+        <h1>Messenger</h1>
+        <div id="chat-window">
+            <ul id="messages"></ul>
+        </div>
+        <input id="message-input" type="text" placeholder="Type a message...">
+        <button id="send-button">Send</button>
+    </div>
+    {% load static %}
+    <script src="{% static 'script.js' %}"></script>
+{% endblock %}

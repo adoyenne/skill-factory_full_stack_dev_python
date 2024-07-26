@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="sendMessageButton">Send Message</button>
+    <div id="messages"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:8001/ws/chat/general/');
+
+        socket.onopen = function(e) {
+            console.log("Connection established");
+        };
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log("Message received: ", data.message);
+            const messageDiv = document.createElement("div");
+            messageDiv.textContent = data.message;
+            document.getElementById("messages").appendChild(messageDiv);
+        };
+
+        socket.onerror = function(error) {
+            console.log("WebSocket Error: ", error);
+        };
+
+        socket.onclose = function(event) {
+            if (event.wasClean) {
+                console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+            } else {
+                console.log('[close] Connection died');
+            }
+        };
+
+        document.getElementById("sendMessageButton").onclick = function() {
+            if (socket.readyState === WebSocket.OPEN) {
+                console.log("Sending message: Hello");
+                socket.send(JSON.stringify({
+                    'message': 'Hello'
+                }));
+            } else {
+                console.log("WebSocket connection is not open.");
+            }
+        };
+    </script>
+</body>
+</html>

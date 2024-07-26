@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Send Message{% endblock %}
+
+{% block content %}
+    <h1>Send Message to {{ recipient.username }}</h1>
+    <textarea id="message-input" placeholder="Type your message..."></textarea>
+    <button id="send-message-button">Send</button>
+    <button id="close-message-button">Close</button>
+
+    <script src="{% static 'send_message.js' %}"></script>
+{% endblock %}
