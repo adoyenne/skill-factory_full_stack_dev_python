@@ -1,13 +1,44 @@
-<!-- templates/registration/register.html -->
 {% extends "base.html" %}
 
 {% block title %}Register{% endblock %}
 
 {% block content %}
 <h2>Register</h2>
-<form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" id="register-form">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Register</button>
 </form>
+<script>
+    document.getElementById('register-form').onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        // Extract CSRF token from the form
+        const csrfToken = formData.get('csrfmiddlewaretoken');
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.access) {
+                localStorage.setItem('access', data.access);
+                localStorage.setItem('refresh', data.refresh);
+                console.log('Access token saved:', localStorage.getItem('access'));
+                window.location.href = '/';
+            } else {
+                alert('Registration failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error during registration:', error);
+        });
+    };
+</script>
 {% endblock %}

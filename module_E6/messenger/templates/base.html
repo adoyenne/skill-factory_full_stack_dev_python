@@ -6,6 +6,15 @@
     <title>{% block title %}My Site{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Access token on DOMContentLoaded:', localStorage.getItem('access'));
+        });
+
+        window.addEventListener('load', function() {
+            console.log('Access token on window load:', localStorage.getItem('access'));
+        });
+    </script>
 </head>
 <body>
 <header>

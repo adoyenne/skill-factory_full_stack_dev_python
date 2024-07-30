@@ -1,13 +1,55 @@
-<!-- templates/registration/login.html -->
 {% extends 'base.html' %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
 <h1>Login</h1>
-<form method="POST" action="{% url 'login' %}">
+<form method="POST" action="{% url 'login' %}" id="login-form">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Login</button>
 </form>
+<script>
+    document.getElementById('login-form').onsubmit = function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text(); // Получаем текст ответа
+            } else {
+                return response.text().then(text => {
+                    throw new Error(text); // Если не OK, выбрасываем текст ошибки
+                });
+            }
+        })
+        .then(text => {
+            console.log('Response text:', text); // Показываем текст ответа
+            try {
+                const data = JSON.parse(text);
+                if (data.access) {
+                    localStorage.setItem('access', data.access);
+                    localStorage.setItem('refresh', data.refresh);
+                    console.log('Access token saved:', localStorage.getItem('access'));
+                    window.location.href = '/';
+                } else {
+                    alert('Login failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error parsing response:', error);
+                alert('Unexpected response format.');
+            }
+        })
+        .catch(error => {
+            console.error('Error during login:', error);
+        });
+    };
+</script>
 {% endblock %}

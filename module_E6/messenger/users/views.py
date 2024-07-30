@@ -1,28 +1,24 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import get_user_model
-from django.contrib.auth import logout as django_logout
-from .serializers import CustomUserSerializer
-from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import get_user_model, login as django_login, logout as django_logout
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
-from django.contrib.auth import login as django_login
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.urls import reverse_lazy
-from .models import UserProfile
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserChangeForm, UserProfileForm
-from django.contrib.auth import login
 from django.views import View
-from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from django.http import JsonResponse
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.http import HttpResponseBadRequest
 
-
-User = get_user_model()
 
 from .models import CustomUser
+from .serializers import CustomUserSerializer
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+
+User = get_user_model()
 
 class CustomUserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -40,103 +36,73 @@ class RegisterView(APIView):
         if form.is_valid():
             user = form.save()
             refresh = RefreshToken.for_user(user)
+            django_login(request, user)
+            response_data = {
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
+            }
+            return JsonResponse(response_data)
+        return JsonResponse({'error': 'Invalid form data'}, status=400)
 
-            # Автоматически вход пользователя после регистрации
-            login(request, user)
-
-            # Возвращаем токены как часть ответа
-            response = redirect('home')  # перенаправляем на главную страницу после успешной регистрации
-            response.set_cookie('access', str(refresh.access_token))
-            response.set_cookie('refresh', str(refresh))
-            return response
-
-        return render(request, 'registration/register.html', {'form': form})
-
-
-class LoginView(View):
+class LoginView(APIView):
     def get(self, request):
         form = AuthenticationForm()
         return render(request, 'registration/login.html', {'form': form})
 
     def post(self, request):
-        print('POST method called')  # Отладка
         form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             django_login(request, user)
             access_token = AccessToken.for_user(user)
             refresh_token = RefreshToken.for_user(user)
-
-            # Debug print statements
-            print('Access token:', access_token)
-            print('Refresh token:', refresh_token)
-
-            # Временно возвращаем простой ответ вместо перенаправления
-            response = HttpResponse(f'Logged in. Access token: {access_token}, Refresh token: {refresh_token}')
-            response.set_cookie('access_token', str(access_token), httponly=True)
-            response.set_cookie('refresh_token', str(refresh_token), httponly=True)
-            return response
+            response_data = {
+                'access': str(access_token),
+                'refresh': str(refresh_token)
+            }
+            return JsonResponse(response_data)
         else:
-            print('Form is not valid:', form.errors)
-        return render(request, 'registration/login.html', {'form': form})
-
+            # Возвращаем ошибку в формате JSON
+            return JsonResponse({'error': 'Invalid credentials'}, status=400)
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # Отладочная информация
-        print(f"Request user: {request.user}")
-        print(f"Request headers: {request.headers}")
-
-        # Завершение сессии пользователя
         django_logout(request)
-
-        # Удаление токенов из cookies, если они есть
-        response = Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-
-        # Получение и удаление refresh_token
-        refresh_token = request.data.get('refresh_token')
+        refresh_token = request.data.get('refresh')
         if refresh_token:
             try:
                 token = RefreshToken(refresh_token)
-                token.blacklist()  # Если используете Blacklist
+                token.blacklist()  # Если используем Blacklist
             except Exception as e:
                 print(f"Error blacklisting token: {e}")
-
-        return response
+        return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
 
 class CustomLogoutView(DjangoLogoutView):
     next_page = reverse_lazy('home')  # Переадресация на страницу home после выхода
-
 
 @login_required
 def profile_view(request, pk):
     user = get_object_or_404(CustomUser, pk=pk)
     return render(request, 'profile.html', {'user': user})
 
-
 @login_required
 def profile_edit(request):
     if request.method == 'POST':
         user_form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
-
         if user_form.is_valid():
             user_form.save()
-            # Перенаправление на страницу профиля текущего пользователя
             return redirect('profile', pk=request.user.pk)
     else:
         user_form = CustomUserChangeForm(instance=request.user)
-
     return render(request, 'registration/profile_edit.html', {'user_form': user_form})
-
-def user_list(request):
-    users = User.objects.exclude(id=request.user.id)  # Исключаем текущего пользователя
-    return render(request, 'user_list.html', {'users': users})
 
 @login_required
 def send_message(request, recipient_id):
     recipient = get_object_or_404(CustomUser, id=recipient_id)
     return render(request, 'send_message.html', {'recipient': recipient})
+
+def user_list(request):
+    users = User.objects.exclude(id=request.user.id)  # Исключаем текущего пользователя
+    return render(request, 'user_list.html', {'users': users})
