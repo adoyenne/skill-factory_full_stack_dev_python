@@ -3,8 +3,6 @@ from .views import RegisterView, LoginView, profile_view, CustomLogoutView
 from rest_framework.routers import DefaultRouter
 from .views import CustomUserViewSet, profile_edit, user_list, send_message
 
-
-
 router = DefaultRouter()
 router.register(r'users', CustomUserViewSet)
 
@@ -17,5 +15,4 @@ urlpatterns = [
     path('users/', user_list, name='user_list'),
     path('send-message/<int:recipient_id>/', send_message, name='send_message'),
 ] + router.urls
-
 

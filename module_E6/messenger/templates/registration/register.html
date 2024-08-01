@@ -4,7 +4,7 @@
 
 {% block content %}
 <h2>Register</h2>
-<form method="post" enctype="multipart/form-data" id="register-form">
+<form method="post" enctype="multipart/form-data" id="register-form" action="{% url 'register' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Register</button>
@@ -21,23 +21,38 @@
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRFToken': csrfToken
+                'X-CSRFToken': csrfToken,
+                'Accept': 'application/json'
             },
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', [...response.headers.entries()]);
+            return response.json().then(data => ({
+                ok: response.ok,
+                status: response.status,
+                data
+            }));
+        })
+        .then(({ ok, status, data }) => {
             console.log('Response data:', data);
-            if (data.access) {
-                localStorage.setItem('access', data.access);
-                localStorage.setItem('refresh', data.refresh);
-                console.log('Access token saved:', localStorage.getItem('access'));
-                window.location.href = '/';
+            if (ok) {
+                if (data.access) {
+                    localStorage.setItem('access', data.access);
+                    localStorage.setItem('refresh', data.refresh);
+                    console.log('Access token saved:', localStorage.getItem('access'));
+                    window.location.href = '/';
+                } else {
+                    alert('Registration failed: ' + (data.error || 'Unknown error'));
+                }
             } else {
-                alert('Registration failed');
+                alert('Registration failed with status ' + status + ': ' + (data.error || 'Unknown error'));
+                console.error('Registration error details:', data.details);
             }
         })
         .catch(error => {
             console.error('Error during registration:', error);
+            alert('Registration error: ' + error.message);
         });
     };
 </script>

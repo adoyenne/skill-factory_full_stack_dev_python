@@ -1,55 +1,58 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login</h2>
+    <form method="POST" action="{% url 'login' %}" id="login-form">
+        {% csrf_token %}
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <button type="submit">Login</button>
+    </form>
 
-{% block title %}Login{% endblock %}
-
-{% block content %}
-<h1>Login</h1>
-<form method="POST" action="{% url 'login' %}" id="login-form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
-<script>
-    document.getElementById('login-form').onsubmit = function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-            },
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text(); // Получаем текст ответа
-            } else {
-                return response.text().then(text => {
-                    throw new Error(text); // Если не OK, выбрасываем текст ошибки
-                });
-            }
-        })
-        .then(text => {
-            console.log('Response text:', text); // Показываем текст ответа
-            try {
-                const data = JSON.parse(text);
-                if (data.access) {
-                    localStorage.setItem('access', data.access);
-                    localStorage.setItem('refresh', data.refresh);
-                    console.log('Access token saved:', localStorage.getItem('access'));
-                    window.location.href = '/';
-                } else {
-                    alert('Login failed: ' + (data.error || 'Unknown error'));
-                }
-            } catch (error) {
-                console.error('Error parsing response:', error);
-                alert('Unexpected response format.');
-            }
-        })
-        .catch(error => {
-            console.error('Error during login:', error);
-        });
+    <script>
+       document.getElementById('login-form').onsubmit = function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = {
+        username: formData.get('username'),
+        password: formData.get('password')
     };
-</script>
-{% endblock %}
+
+    fetch('/login/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text();  // Получаем текст ответа, если это не JSON
+        }
+        return response.json();  // Попробуем получить JSON, если статус OK
+    })
+    .then(data => {
+        console.log('Parsed JSON:', data);
+        if (data.access) {
+            localStorage.setItem('access', data.access);
+            localStorage.setItem('refresh', data.refresh);
+            window.location.href = '/';
+        } else {
+            alert('Login failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error during login:', error);
+    });
+};
+    </script>
+</body>
+</html>

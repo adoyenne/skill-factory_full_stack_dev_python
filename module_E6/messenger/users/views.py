@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.contrib.auth import get_user_model, login as django_login, logout as django_logout
+from django.contrib.auth import authenticate, get_user_model, login as django_login, logout as django_logout
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -12,6 +12,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
 from django.http import HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
 
 
 from .models import CustomUser
@@ -42,29 +43,27 @@ class RegisterView(APIView):
                 'refresh': str(refresh)
             }
             return JsonResponse(response_data)
-        return JsonResponse({'error': 'Invalid form data'}, status=400)
+        else:
+            errors = form.errors.as_json()
+            return JsonResponse({'error': 'Invalid form data', 'details': errors}, status=400)
 
 class LoginView(APIView):
-    def get(self, request):
-        form = AuthenticationForm()
-        return render(request, 'registration/login.html', {'form': form})
-
     def post(self, request):
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+        username = request.data.get('username')
+        password = request.data.get('password')
+        print(f"Login attempt with username: {username}")
+        user = authenticate(username=username, password=password)
+        if user is not None:
             django_login(request, user)
-            access_token = AccessToken.for_user(user)
-            refresh_token = RefreshToken.for_user(user)
+            print("User authenticated successfully.")
+            refresh = RefreshToken.for_user(user)
             response_data = {
-                'access': str(access_token),
-                'refresh': str(refresh_token)
+                'access': str(refresh.access_token),
+                'refresh': str(refresh)
             }
-            return JsonResponse(response_data)
-        else:
-            # Возвращаем ошибку в формате JSON
-            return JsonResponse({'error': 'Invalid credentials'}, status=400)
-
+            return Response(response_data)
+        print("Authentication failed.")
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
