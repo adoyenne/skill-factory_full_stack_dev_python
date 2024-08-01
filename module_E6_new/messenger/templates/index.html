@@ -27,6 +27,26 @@
                 <button type="submit">Register</button>
             </form>
         </div>
+
+        <div id="profile" style="display:none;">
+            <h2>Profile</h2>
+            <form id="profileForm" enctype="multipart/form-data">
+                <label for="profileUsername">Username:</label>
+                <input type="text" id="profileUsername" name="username" required><br>
+
+                <label for="profileFirstName">First Name:</label>
+                <input type="text" id="profileFirstName" name="first_name" required><br>
+
+                <label for="profileLastName">Last Name:</label>
+                <input type="text" id="profileLastName" name="last_name" required><br>
+
+                <label for="profileAvatar">Avatar:</label>
+                <input type="file" id="profileAvatar" name="avatar"><br>
+
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+
         <div id="chatApp" style="display:none;">
             <!-- User list -->
             <div id="users"></div>
@@ -47,6 +67,7 @@
             </form>
         </div>
     </div>
+
     <script src="{% static 'main.js' %}"></script>
 </body>
 </html>

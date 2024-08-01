@@ -5,9 +5,11 @@ from rest_framework import serializers
 from .models import User, Chat, Message
 
 class UserSerializer(serializers.ModelSerializer):
+    avatar = serializers.ImageField(allow_null=True, required=False)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'avatar', 'first_name', 'last_name']
+        fields = ['id', 'username', 'first_name', 'last_name', 'avatar']
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
@@ -36,7 +38,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)  # Если user только для чтения
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = Message
