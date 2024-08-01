@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         socket.onclose = function(event) {
             console.error('Chat socket closed unexpectedly:', event);
-            setTimeout(() => connectWebSocket(chatId), 5000); // Попробовать переподключиться
+            setTimeout(() => connectWebSocket(chatId), 5000);
         };
     }
 
